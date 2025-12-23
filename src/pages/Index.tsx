@@ -5,6 +5,7 @@ import Icon from '@/components/ui/icon';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('home');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -27,6 +28,7 @@ const Index = () => {
 
   const scrollToSection = (id: string) => {
     setActiveSection(id);
+    setMobileMenuOpen(false);
     const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
@@ -65,15 +67,57 @@ const Index = () => {
               })}
             </div>
 
-            <Button 
-              onClick={() => scrollToSection('live')}
-              className="gradient-bg hover:opacity-90 transition-opacity"
-            >
-              <Icon name="Play" size={16} className="mr-2" />
-              Слушать
-            </Button>
+            <div className="flex items-center gap-3">
+              <Button 
+                onClick={() => scrollToSection('live')}
+                className="hidden sm:flex gradient-bg hover:opacity-90 transition-opacity"
+              >
+                <Icon name="Play" size={16} className="mr-2" />
+                Слушать
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="icon"
+                className="md:hidden"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              >
+                <Icon name={mobileMenuOpen ? "X" : "Menu"} size={24} />
+              </Button>
+            </div>
           </div>
         </div>
+
+        {mobileMenuOpen && (
+          <div className="md:hidden absolute top-full left-0 right-0 backdrop-blur-xl bg-background/95 border-b border-border animate-fade-in">
+            <div className="container mx-auto px-4 py-6 space-y-4">
+              {['Главная', 'Прямой эфир', 'О станции', 'Реклама', 'Контакты'].map((item, idx) => {
+                const id = ['home', 'live', 'about', 'ads', 'contacts'][idx];
+                return (
+                  <button
+                    key={item}
+                    onClick={() => scrollToSection(id)}
+                    className={`block w-full text-left px-4 py-3 rounded-lg font-medium transition-all ${
+                      activeSection === id 
+                        ? 'bg-primary/10 text-primary' 
+                        : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                    }`}
+                  >
+                    {item}
+                  </button>
+                );
+              })}
+              
+              <Button 
+                onClick={() => scrollToSection('live')}
+                className="w-full gradient-bg hover:opacity-90 transition-opacity"
+              >
+                <Icon name="Play" size={16} className="mr-2" />
+                Слушать радио
+              </Button>
+            </div>
+          </div>
+        )}
       </nav>
 
       <section id="home" className="min-h-screen flex items-center justify-center relative overflow-hidden pt-20">
